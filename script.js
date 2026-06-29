@@ -48,7 +48,7 @@ let shouldResetDisplay = false;
 
 function updateDisplay() {
     currentOperand.textContent = currentNumber || "0";
-    decimalButton.disabled = currentNumber.includes(".");
+    decimalButton.disabled = currentNumber.toString().includes(".");
 }
 
 function appendNumber(number) {
@@ -91,10 +91,10 @@ function calculate() {
     if (firstNumber === "" || operator === "") {
         return;
     }
-    currentNumber = operate(Number(firstNumber), operator, Number(currentNumber));
+    currentNumber = String(operate(Number(firstNumber), operator, Number(currentNumber)));
 
-    if (typeof currentNumber === "number") {
-        currentNumber = Number(currentNumber.toFixed(6));
+    if (!isNaN(currentNumber)) {
+        currentNumber = String(Number(Number(currentNumber).toFixed(6)));
     }
 
     updateDisplay();
