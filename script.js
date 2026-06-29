@@ -11,6 +11,9 @@ function multiply(a, b) {
 }
 
 function divide(a, b) {
+    if (b === 0) {
+        return "Bruhh, you can't divide by 0!!";
+    }
     return a / b;
 }
 
@@ -33,18 +36,23 @@ const currentOperand = document.querySelector("#current-operand");
 const numberButtons = document.querySelectorAll(".btn[data-number]");
 const operatorButtons = document.querySelectorAll(".btn[data-operator]");
 const equalsButton = document.querySelector(".equalsbtn");
+const clearButton = document.querySelector(".clearbtn");
 
 let firstNumber = "";
-let currentNumber = "0";
+let currentNumber = "";
 let operator = "";
+let shouldResetDisplay = false;
 
 
 function updateDisplay() {
-    currentOperand.textContent = currentNumber;
+    currentOperand.textContent = currentNumber || "0";
 }
 
 function appendNumber(number) {
-    if (currentNumber === "0") {
+    if (shouldResetDisplay) {
+        currentNumber = number;
+        shouldResetDisplay = false;
+    } else if (currentNumber === "0") {
         currentNumber = number;
     } else {
         currentNumber += number;
@@ -54,20 +62,48 @@ function appendNumber(number) {
 }
 
 function chooseOperator(selectedOperator) {
-    firstNumber = currentNumber;
-    operator = selectedOperator;
-    currentNumber = "0";
+    if (firstNumber === "") {
+        firstNumber = currentNumber;
+    }
 
-    updateDisplay();
+    if (shouldResetDisplay) {
+        operator = selectedOperator;
+        return;
+    }
+
+    if (operator !== "") {
+        calculate();
+        firstNumber = currentNumber;
+    }
+
+    operator = selectedOperator;
+    shouldResetDisplay = true;
 }
 
 function calculate() {
+    if (firstNumber === "" || operator === "") {
+        return;
+    }
     currentNumber = operate(Number(firstNumber), operator, Number(currentNumber));
+
+    if (typeof currentNumber === "number") {
+        currentNumber = Number(currentNumber.toFixed(6));
+    }
 
     updateDisplay();
 
     firstNumber = "";
     operator = "";
+    shouldResetDisplay = true;
+}
+
+function clearCalculator() {
+    firstNumber = "";
+    currentNumber = "0";
+    operator = "";
+    shouldResetDisplay = false;
+
+    updateDisplay();
 }
 
 
@@ -86,3 +122,7 @@ operatorButtons.forEach((button) => {
 equalsButton.addEventListener("click", () => {
     calculate();
 });
+
+clearButton.addEventListener("click", () => {
+    clearCalculator();
+})
